@@ -16,6 +16,11 @@ struct Hole <: GridObject
     location::Location
 end
 
+struct Obstacle <: GridObject
+    id::Int
+    location::Location
+end
+
 struct Agent <: GridObject
     id::Int
     location::Location
