@@ -113,6 +113,9 @@ function printGrid(grid)
         end
         println()
     end
+    for a in grid.agents
+        println("Agent $(a.id) : $(a.score)")
+    end
 end
 
 function move(grid::Grid, a::Agent, l::Location)
@@ -145,11 +148,18 @@ function moveToTile(grid::Grid, a::Agent)
         # arrived
         pickTile(grid, a)
     end
-    path = astar(grid, a.location, a.tile.location)
-    println("agent $a: path=$path")
-    if (!isempty(path))
-        nextLoc = popfirst!(path)
+    if (a.tile != grid.objects[a.tile.location.c, a.tile.location.r])
+        a.tile = getClosestTile(grid, a.location)
+        a.path = missing
+    end
+    if (a.path isa Missing || isempty(a.path))
+        a.path = astar(grid, a.location, a.tile.location)
+        println("agent $a: path=$(a.path)")
+    end
+    if (!isempty(a.path))
+        nextLoc = popfirst!(a.path)
         move(grid, a, nextLoc)
+    else
     end
 end
 
@@ -158,9 +168,16 @@ function moveToHole(grid::Grid, a::Agent)
         # arrived
         dumpTile(grid, a)
     end
-    path = astar(grid, a.location, a.hole.location)
-    if (!isempty(path))
-        nextLoc = popfirst!(path)
+    if (a.hole != grid.objects[a.hole.location.c, a.hole.location.r])
+        a.hole = getClosestHole(grid, a.location)
+        a.path = missing
+    end
+    if (a.path isa Missing || isempty(a.path))
+        a.path = astar(grid, a.location, a.hole.location)
+        println("agent $a: path=$(a.path)")
+    end
+    if (!isempty(a.path))
+        nextLoc = popfirst!(a.path)
         move(grid, a, nextLoc)
     end
 end
@@ -169,6 +186,7 @@ function pickTile(grid::Grid, a::Agent)
     a.hasTile = true
     a.hole = getClosestHole(grid, a.location)
     a.state=2
+    a.path = missing
     removeTile(grid, a.tile, a)
 end
 
@@ -178,5 +196,6 @@ function dumpTile(grid::Grid, a::Agent)
     a.hasTile = false
     a.tile = getClosestTile(grid, a.location)
     a.hole = missing
+    a.path = missing
     a.state = 1
 end

@@ -49,9 +49,10 @@ mutable struct Agent <: GridObject
     hole::Union{Missing, Hole}
     hasTile::Bool
     state::Int
+    path::Union{Missing, Array}
 
     function Agent(id, location)
-        new(id, location, 0, missing, missing, false, 0)
+        new(id, location, 0, missing, missing, false, 0, missing)
     end
 end
 
