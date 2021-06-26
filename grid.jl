@@ -12,7 +12,7 @@ mutable struct Grid
         agents = Array{Union{Missing, Agent}}(missing, numAgents)
         tiles = Array{Union{Missing, Tile}}(missing, numObjects)
         holes = Array{Union{Missing, Hole}}(missing, numObjects)
-        grid = new(objects, agents, tiles)
+        grid = new(objects, agents, tiles, holes)
         for i in 1:numAgents
             l = randomFreeLocation(grid)
             agents[i] = Agent(i, l)
@@ -95,6 +95,8 @@ function removeHole(grid::Grid, h::Hole, a::Agent)
 end
 
 function printGrid(grid)
+    println("tiles:$(grid.tiles)")
+    println("holes:$(grid.holes)")
     for r in 1:10
         for c in 1:10
             if grid.objects[c, r] !== missing
@@ -147,6 +149,7 @@ function moveToTile(grid::Grid, a::Agent)
     if (equal(a.location, a.tile.location))
         # arrived
         pickTile(grid, a)
+        return
     end
     if (a.tile != grid.objects[a.tile.location.c, a.tile.location.r])
         a.tile = getClosestTile(grid, a.location)
@@ -167,6 +170,7 @@ function moveToHole(grid::Grid, a::Agent)
     if (equal(a.location, a.hole.location))
         # arrived
         dumpTile(grid, a)
+        return
     end
     if (a.hole != grid.objects[a.hole.location.c, a.hole.location.r])
         a.hole = getClosestHole(grid, a.location)
