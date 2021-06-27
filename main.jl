@@ -11,7 +11,7 @@ module Tileworld
     showall(win)
 
     grid = Grid(6, 10)
-    g_timeout_add(update, 200)
+    g_timeout_add(update, 200) # run update every 200 millis
 
 
     function update() 
@@ -20,7 +20,7 @@ module Tileworld
         end
         drawGrid(canvas, grid)
         printGrid(grid)
-        Cint(true)
+        Cint(true) # continue
     end
 
     if !isinteractive()
