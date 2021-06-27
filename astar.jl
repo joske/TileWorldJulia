@@ -19,10 +19,10 @@ function astar(grid::Grid, from::Location, to::Location)
     closedList = Set{Location}()
     fromNode = Node(from, [], 0)
     push!(openList, fromNode)
-    println("openList=$openList")
+    # println("openList=$openList")
     while(!isempty(openList))
         current = pop!(openList)
-        println("current=$current")
+        # println("current=$current")
         if (equal(current.location, to))
             return current.path
         end
@@ -36,11 +36,11 @@ function astar(grid::Grid, from::Location, to::Location)
 end
 
 function checkNeighbor(grid::Grid, openList::SortedSet, closedList::Set, current::Node, to::Location, dir::Int)
-    println("checking direction $dir")
+    # println("checking direction $dir")
     nextLoc = nextLocation(current.location, dir)
-    println("nextLoc=$nextLoc")
+    # println("nextLoc=$nextLoc")
     if (equal(nextLoc, to) || isValid(grid, nextLoc))
-        println("valid")
+        # println("valid")
         h = distance(nextLoc, to)
         g = length(current.path) + 1
         if (length(current.path) > 0)
@@ -56,7 +56,7 @@ function checkNeighbor(grid::Grid, openList::SortedSet, closedList::Set, current
                     return
                 end
             end
-            println("adding node to openList $child")            
+            # println("adding node to openList $child")            
             push!(openList, child)
         end
     end    

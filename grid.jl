@@ -1,5 +1,5 @@
-const COLS = 10
-const ROWS = 10
+const COLS = 20
+const ROWS = 20
 
 mutable struct Grid
     objects::Array
@@ -45,8 +45,8 @@ function isFree(grid::Grid, location::Location)
 end
 
 function randomFreeLocation(grid::Grid)
-    c = rand(1:10)
-    r = rand(1:10)
+    c = rand(1:COLS)
+    r = rand(1:ROWS)
     l = Location(c, r)
     while (!isFree(grid, l))
         c = rand(1:10)
@@ -97,8 +97,8 @@ end
 function printGrid(grid)
     println("tiles:$(grid.tiles)")
     println("holes:$(grid.holes)")
-    for r in 1:10
-        for c in 1:10
+    for r in 1:ROWS
+        for c in 1:COLS
             if grid.objects[c, r] !== missing
                 if grid.objects[c, r] isa Agent
                     print("A")
@@ -128,6 +128,7 @@ function move(grid::Grid, a::Agent, l::Location)
 end
 
 function update(grid::Grid, a::Agent)
+    println("$a")
     if (a.state == 0)
         idle(grid, a)
     elseif (a.state == 1)
@@ -151,7 +152,7 @@ function moveToTile(grid::Grid, a::Agent)
         pickTile(grid, a)
         return
     end
-    if (a.tile != grid.objects[a.tile.location.c, a.tile.location.r])
+    if (grid.objects[a.tile.location.c, a.tile.location.r] isa Missing || a.tile != grid.objects[a.tile.location.c, a.tile.location.r])
         a.tile = getClosestTile(grid, a.location)
         a.path = missing
     end
@@ -161,8 +162,13 @@ function moveToTile(grid::Grid, a::Agent)
     end
     if (!isempty(a.path))
         nextLoc = popfirst!(a.path)
-        move(grid, a, nextLoc)
-    else
+        if (isValid(grid, nextLoc) || equal(nextLoc, a.tile.location))
+            move(grid, a, nextLoc)
+        else
+            println("path no longer valid - force recalculate")
+            a.tile = getClosestTile(grid, a.location)
+            a.path = missing
+        end
     end
 end
 
@@ -172,7 +178,7 @@ function moveToHole(grid::Grid, a::Agent)
         dumpTile(grid, a)
         return
     end
-    if (a.hole != grid.objects[a.hole.location.c, a.hole.location.r])
+    if (grid.objects[a.hole.location.c, a.hole.location.r] isa Missing || a.hole != grid.objects[a.hole.location.c, a.hole.location.r])
         a.hole = getClosestHole(grid, a.location)
         a.path = missing
     end
@@ -182,7 +188,12 @@ function moveToHole(grid::Grid, a::Agent)
     end
     if (!isempty(a.path))
         nextLoc = popfirst!(a.path)
-        move(grid, a, nextLoc)
+        if (isValid(grid, nextLoc) || equal(nextLoc, a.hole.location))
+            move(grid, a, nextLoc)
+        else
+            a.hole = getClosestHole(grid, a.location)
+            a.path = missing
+        end
     end
 end
 

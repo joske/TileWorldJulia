@@ -1,5 +1,5 @@
 module Tileworld
-    using Random: include
+    using Gtk
     
     include("objects.jl")
     include("grid.jl")
@@ -10,13 +10,25 @@ module Tileworld
     win = GtkWindow(canvas, "TileWorld", COLS * MAG + 200, ROWS * MAG)
     showall(win)
 
-    grid = Grid(1, 5)
-    for i in 1:20 # 10 timesteps
+    grid = Grid(6, 10)
+    g_timeout_add(update, 200)
+
+
+    function update() 
         for a in grid.agents
             update(grid, a)
         end
         drawGrid(canvas, grid)
         printGrid(grid)
-        sleep(1)
+        Cint(true)
     end
+
+    if !isinteractive()
+        cond = Condition()
+        signal_connect(win, :destroy) do widget
+            notify(cond)
+        end
+        wait(cond)
+    end
+
 end
