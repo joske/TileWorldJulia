@@ -1,5 +1,5 @@
-const COLS = 20
-const ROWS = 20
+const COLS = 40
+const ROWS = 40
 
 mutable struct Grid
     objects::Array

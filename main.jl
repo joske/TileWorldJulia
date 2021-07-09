@@ -10,7 +10,7 @@ module Tileworld
     win = GtkWindow(canvas, "TileWorld", COLS * MAG + 200, ROWS * MAG)
     showall(win)
 
-    grid = Grid(6, 10)
+    grid = Grid(6, 20)
     g_timeout_add(update, 200) # run update every 200 millis
 
 

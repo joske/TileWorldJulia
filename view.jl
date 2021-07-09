@@ -6,7 +6,7 @@ function drawGrid(canvas::GtkCanvas, grid::Grid)
     @guarded draw(canvas) do widget
         ctx = getgc(canvas)
         set_source_rgb(ctx, 1, 1, 1)
-        rectangle(ctx, 0, 0, COLS * MAG, COLS * MAG)
+        rectangle(ctx, 0, 0, COLS * MAG + 200, COLS * MAG)
         fill(ctx)
         set_source_rgb(ctx, 0, 0, 0)
         rectangle(ctx, 0, 0, COLS * MAG, COLS * MAG)
@@ -43,13 +43,14 @@ function drawGrid(canvas::GtkCanvas, grid::Grid)
                     elseif o isa Obstacle
                         new_path(ctx)
                         rectangle(ctx, x, y, MAG, MAG)
-                        stroke(ctx)
+                        fill(ctx)
                     end 
                 end # not empty
             end # col
         end # row
         x = COLS * MAG + 50
         y = 20
+        new_path(ctx)
         for a in grid.agents
             r, g, b = getColor(a.id)
             set_source_rgb(ctx, r, g, b)
